@@ -1,34 +1,68 @@
+using System;
+using Unity.Entities;
 using UnityEngine;
 using PugMod;
 
-public class ModEntry : IMod
+namespace PortableFoundationsMod
 {
-    // This method is called automatically when the mod is loaded
-    public void EarlyInit()
+    public class ModEntry : IMod
     {
-        Debug.Log("[PortableFoundationsMod] Phase 1 Active: Mod has successfully loaded into the game execution pipeline! ");
-    }
+        private const string MOD_VERSION = "1.0.0";
+        private const string ITEM_LOOKUP_NAME = "PackedStructureItem";
 
-    public void Init()
-    {
-        // Optional second phase of initialization
-    }
+        public static ObjectID PackedItemObjectID { get; private set; } = ObjectID.None;
 
-    // Runs every frame on the main thread
-    public void Update()
-    {
-        // Keep empty for now
-    }
+        public void EarlyInit()
+        {
+            Debug.Log($"[PortableFoundations] EarlyInit version {MOD_VERSION}");
+        }
 
-    public void Shutdown()
-    {
-        // Called when leaving the game or disabling the mod
-        Debug.Log("[PortableFoundationsMod] Shutting down cleanly.");
-    }
+        public void Init()
+        {
+            Debug.Log("[PortableFoundations] Init called.");
+        }
 
-    // Capitalized 'Object' to explicitly match the interface signature
-    public void ModObjectLoaded(Object block)
-    {
-        // Used in later phases when tracking objects
+        public void PostInit()
+        {
+            RegisterModItem();
+        }
+
+        private void RegisterModItem()
+        {
+            try
+            {
+                // The SDK bakes custom object names directly into the ObjectID enum structure at runtime
+                if (Enum.TryParse(ITEM_LOOKUP_NAME, out ObjectID foundID))
+                {
+                    PackedItemObjectID = foundID;
+                    Debug.Log($"[PortableFoundations] Successfully linked custom item! ID assigned: {PackedItemObjectID}");
+                }
+                else
+                {
+                    Debug.LogError($"[PortableFoundations] Critical Failure: Could not resolve enum entry for '{ITEM_LOOKUP_NAME}'.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
+        }
+
+        // Required interface implementation
+        public void Update()
+        {
+            // Left blank intentionally for now
+        }
+
+        // Required interface implementation
+        public void ModObjectLoaded(UnityEngine.Object obj)
+        {
+            // Left blank intentionally for now
+        }
+
+        public void Shutdown()
+        {
+            Debug.Log("[PortableFoundations] Shutting down.");
+        }
     }
 }
