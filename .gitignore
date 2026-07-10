@@ -76,3 +76,6 @@ crashlytics-build.properties
 
 # Jetbrains
 .idea/
+
+/ImportedGameFolders/
+/Assets/Plugins/CoreKeeper/
